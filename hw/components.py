@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from signal import Signals
 from myhdl import *
 
 
@@ -91,6 +92,11 @@ def mux2way(q, a, b, sel):
 
     @always_comb
     def comb():
+        if sel == 0:
+            q.next = a
+        elif sel == 1:
+            q.next = b
+       
         q.next = a if sel == 0 else b
 
     return comb
@@ -332,7 +338,6 @@ def bin2bcd(b, bcd1, bcd0):
     """
     componente que converte um vetor de b[8:] (bin)
     para dois digitos em BCD
-
     Exemplo:
     bin  = `01010010`
     BCD1 = 8
@@ -341,14 +346,17 @@ def bin2bcd(b, bcd1, bcd0):
 
     foo = Signal(intbv(0)[4:])
 
+    tens = tuple(num//10 for num in range(100))
+    ones = tuple(num%10 for num in range(100))
+
     @always_comb
     def comb():
+        bcd1.next = tens[b]
+        bcd0.next = ones[b]
         bcd1.next = DIG0[int(b)]
         bcd0.next = DIG1[int(b)]
 
     return comb
-
-
 # -----------------------------#
 # Conceito A
 # -----------------------------#
